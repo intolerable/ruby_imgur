@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.authors = ["Fraser Murray"]
   s.date = "2012-05-23"
   s.email = "fraser.m.murray@gmail.com"
-  s.files = ["lib/imgur.rb~", "lib/imgur.rb", "lib/test", "lib/imgur_rails.rb"]
+  s.files = ["lib/imgur.rb", "lib/test", "lib/imgur_rails.rb"]
   s.homepage = ""
   s.require_paths = ["lib"]
   s.rubygems_version = "1.8.15"
