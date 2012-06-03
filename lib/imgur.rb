@@ -5,21 +5,22 @@ require 'base64'
 
 class Imgur
   
+  # add an API key to use for uploads
   def self.api_key=( api_key )
-    @@api_key = api_key.strip
+    @@api_key = api_key.to_s.chomp
   end
   
   def self.upload( options = {} )
-    data = Base64.encode64(open(options[:filename]).read) ||
-      options[:data] ||
-      options[:url]
+    data = options[:data] ||
+      options[:url] ||
+      Base64.encode64(open(options[:filename]).read)
     post_data = { :key => @@api_key, :image => data }
     post_url = generate_url :method => :upload
     post_uri = URI.parse post_url
     response = JSON (Net::HTTP.post_form post_uri, post_data).body
     { :hash => response["upload"]["image"]["hash"],
       :delete_hash => response["upload"]["image"]["deletehash"],
-      :filetype => response["upload"]["image"]["type"] }
+      :filetype => response["upload"]["image"]["type"].gsub("image\/","") }
   end
   
   def self.upload_file( filename )
@@ -35,7 +36,7 @@ class Imgur
   end
   
   def self.delete( delete_hash )
-    json_get( :hash => delete_hash, :method => :delete )["delete"]["message"]
+    json_get( :hash => delete_hash, :method => :delete )["delete"]["message"] == "Success"
   end
   
   def self.album( hash, options = {} )
@@ -43,11 +44,18 @@ class Imgur
   end
   
   def self.url_for( hash, options = {} )
-    if options[:filetype]
-      "http://i.imgur.com/#{hash}.#{options[:filetype]}"
-    else
-      json_get( :hash => hash, :method => :image )["image"]["links"]["original"]
+    sizes = {
+      :small => :s,
+      :large => :l }
+    if options[:filetype] == :detect
+      # fix this it's ugly
+      options[:filetype] = json_get( :hash => hash, :method => :image )["image"]["image"]["type"].gsub("image\/","")
     end
+    "http://i.imgur.com/#{hash}#{sizes[options[:size]]}.#{options[:filetype] || :png}"
+  end
+  
+  def self.debug=( debug_setting )
+    @debug = debug_setting
   end
   
   class << self
@@ -55,6 +63,11 @@ class Imgur
   end
   
   private
+  
+  def debug( thing_to_debug, message = "" )
+    puts message + thing_to_debug.to_s
+    thing_to_debug
+  end
   
   def self.json_get( options = {} )
     JSON open(generate_url options).read
