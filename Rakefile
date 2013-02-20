@@ -2,8 +2,6 @@ require "rubygems"
 require "rubygems/package_task"
 require "rdoc/task"
 
-
-
 task :default => :package do
 end
 
@@ -16,7 +14,7 @@ spec = Gem::Specification.new do |s|
 
   # Change these as appropriate
   s.name              = "ruby_imgur"
-  s.version           = "0.2.0"
+  s.version           = "1.0.0"
   s.summary           = "library for imgur api"
   s.author            = "Fraser Murray"
   s.email             = "fraser.m.murray@gmail.com"
