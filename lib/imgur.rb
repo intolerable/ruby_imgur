@@ -8,10 +8,16 @@ class Imgur
   
   IMAGE_SIZES = { :small => :s, :medium => :m, :large => :l }
   
+  # Set Imgur client ID - get it from http://imgur.com/account/settings/apps
+  #
+  # @param client_id [String] the Imgur API client ID
+  # @return [String]
   def self.client_id=( client_id )
     @@client_id = client_id
   end
   
+  # @param options Hash{}
+  # @return [Hash] keys `:hash`, `:delete_hash`, `:filetype`
   def self.upload( options = {} )
     data = options[:data] ||
       options[:url] ||
